@@ -4,467 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AS Grzybsonia | FC27</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        
-        /* Płynne przewijanie całej strony */
-        html { scroll-behavior: smooth; }
-
-        body { background-color: #07050d; color: #f3e8ff; min-height: 100vh; padding-bottom: 40px; }
-
-        /* Klasa blokująca tło strony przy otwartym oknie */
-        body.modal-open {
-            overflow: hidden !important;
-            height: 100vh;
-        }
-
-        /* Nagłówek i Nawigacja przypięte do góry */
-        .top-bar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background-color: #0f0a1c;
-        }
-
-        header {
-            padding: 15px 20px;
-            text-align: center;
-            border-bottom: 2px solid #a855f7;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
-        }
-
-        /* Pasek nawigacyjny z poziomym przewijaniem */
-        nav {
-            background-color: #140d26;
-            padding: 12px 15px;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            white-space: nowrap;
-            border-bottom: 1px solid #2e1a47;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Ukrycie paska przewijania w menu */
-        nav::-webkit-scrollbar { display: none; }
-        nav { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Przycisk jako odnośnik scrollujący */
-        .nav-btn {
-            background-color: #1f1338;
-            color: #d8b4fe;
-            border: 1px solid #a855f7;
-            padding: 10px 18px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 5px rgba(168, 85, 247, 0.2);
-            display: inline-block;
-        }
-
-        .nav-btn:hover, .nav-btn:active {
-            background-color: #a855f7;
-            color: #ffffff;
-            box-shadow: 0 0 15px #a855f7, 0 0 25px rgba(168, 85, 247, 0.8);
-            border-color: #e9d5ff;
-        }
-
-        /* Kontener na treści */
-        .container { max-width: 800px; margin: 20px auto; padding: 0 10px; }
-
-        .hero {
-            text-align: center;
-            padding: 25px 15px;
-            background-color: #140d26;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border: 1px solid #a855f7;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
-        }
-        .hero h1 { 
-            font-size: 24px; 
-            color: #e9d5ff; 
-            margin-bottom: 8px;
-            text-shadow: 0 0 8px #a855f7;
-        }
-        .hero p { color: #c084fc; font-size: 13px; }
-
-        /* Margines dla sekcji pod przypięty pasek */
-        .section-target {
-            scroll-margin-top: 130px;
-            margin-bottom: 25px;
-        }
-
-        .card {
-            background-color: #140d26;
-            padding: 15px 10px;
-            border-radius: 10px;
-            border: 1px solid #3b1d66;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-        .card h2 { 
-            color: #d8b4fe; 
-            font-size: 18px; 
-            margin-bottom: 12px; 
-            border-bottom: 1px solid #3b1d66; 
-            padding-bottom: 6px;
-            text-shadow: 0 0 5px rgba(168, 85, 247, 0.5);
-        }
-        .card p, .card ul { color: #f3e8ff; font-size: 14px; line-height: 1.6; }
-
-        /* Stylizacja Boiska */
-        .pitch {
-            background: linear-gradient(180deg, #09170e 0%, #050d08 100%);
-            border: 2px solid #a855f7;
-            border-radius: 12px;
-            padding: 15px 4px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
-            margin-top: 10px;
-            overflow-x: auto;
-        }
-
-        .pitch-row {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            gap: 2px;
-            min-width: 320px;
-        }
-
-        .player-card {
-            background-color: #140d26;
-            border: 1px solid #a855f7;
-            border-radius: 6px;
-            padding: 4px 2px;
-            text-align: center;
-            flex: 1;
-            max-width: 78px;
-            box-shadow: 0 0 5px rgba(168, 85, 247, 0.3);
-        }
-
-        .player-card.goalkeeper {
-            border-color: #eab308;
-            box-shadow: 0 0 5px rgba(234, 179, 8, 0.3);
-        }
-
-        .player-card .pos {
-            display: block;
-            font-size: 9px;
-            font-weight: bold;
-            color: #c084fc;
-            line-height: 1;
-        }
-
-        .player-card.goalkeeper .pos {
-            color: #fde047;
-        }
-
-        .player-card .name {
-            display: block;
-            font-size: 9px;
-            font-weight: 600;
-            color: #ffffff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin: 2px 0;
-        }
-
-        .player-card .stats {
-            display: block;
-            font-size: 8px;
-            color: #d8b4fe;
-            line-height: 1;
-        }
-
-        /* Układ siatki informacji */
-        .info-group {
-            background: #0f0a1c;
-            border: 1px solid #2e1a47;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .info-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .info-group-title {
-            color: #e9d5ff;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding-bottom: 10px;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #3b1d66;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-        }
-
-        .info-item {
-            background-color: #140d26;
-            border-left: 3px solid #a855f7;
-            padding: 8px 12px;
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .info-item.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .info-label {
-            font-size: 11px;
-            color: #a855f7;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .info-value {
-            font-size: 14px;
-            color: #f3e8ff;
-            font-weight: 500;
-        }
-
-        .info-value.highlight {
-            color: #d8b4fe;
-            font-weight: 700;
-        }
-
-        /* Styl paska neonowego */
-        .tasma-napisu {
-            display: inline-block;
-            white-space: nowrap;
-            animation: lewoDoPrawej 10s linear infinite;
-        }
-
-        .neon-tekst {
-            display: inline-block;
-            font-weight: bold;
-            font-family: 'Arial Black', sans-serif;
-            padding-right: 50px;
-            color: #e9d5ff;
-            text-shadow: 
-                0 0 5px #fff,
-                0 0 10px #a855f7,
-                0 0 20px #a855f7,
-                0 0 30px #c084fc,
-                0 0 40px #c084fc;
-        }
-
-        @keyframes lewoDoPrawej {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
-        }
-
-        /* Tabele */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #2e1a47; }
-        th { background-color: #2e1a47; color: #e9d5ff; }
-
-        /* --- STYLE DLA SEKCJI TRANSFERÓW I MODALI --- */
-        .transfer-buttons-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .transfer-row-top {
-            display: flex;
-            gap: 12px;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .transfer-row-bottom {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .transfer-btn {
-            cursor: pointer;
-            min-width: 140px;
-            text-align: center;
-        }
-
-        /* Okna Modalne z niezależnym skrolowaniem */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(4px);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            touch-action: none;
-        }
-
-        .modal-content {
-            background-color: #140d26;
-            border: 2px solid #a855f7;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-            animation: fadeIn 0.25s ease-out;
-            touch-action: auto;
-        }
-
-        .modal-header {
-            background-color: #1f1338;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #3b1d66;
-            flex-shrink: 0;
-        }
-
-        .modal-header h3 {
-            color: #e9d5ff;
-            font-size: 16px;
-            margin: 0;
-        }
-
-        .close-btn {
-            background: #2e1a47;
-            color: #a855f7;
-            border: 1px solid #a855f7;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .close-btn:hover {
-            background: #a855f7;
-            color: #fff;
-            box-shadow: 0 0 8px #a855f7;
-        }
-
-        .modal-body {
-            padding: 20px;
-            font-size: 14px;
-            color: #f3e8ff;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            max-height: 100%;
-        }
-
-        /* Podsumowanie finansowe w modalu */
-        .transfer-summary {
-            background-color: #0f0a1c;
-            border-left: 3px solid #a855f7;
-            padding: 10px 12px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-        .transfer-summary p { color: #d8b4fe; margin-top: 3px; }
-
-        /* Rozwijana karta zawodnika */
-        .transfer-card {
-            background-color: #0f0a1c;
-            border: 1px solid #3b1d66;
-            border-radius: 6px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .transfer-summary-title {
-            padding: 12px;
-            background-color: #1f1338;
-            color: #e9d5ff;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            user-select: none;
-        }
-
-        .transfer-summary-title:hover {
-            background-color: #2e1a47;
-        }
-
-        .player-name-badge {
-            color: #a855f7;
-            font-weight: bold;
-        }
-
-        .transfer-details-content {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background-color: #140d26;
-            border-top: 1px solid #3b1d66;
-        }
-
-        .transfer-detail-item .detail-label {
-            font-size: 12px;
-            color: #a855f7;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .transfer-detail-item .detail-value {
-            background-color: #0f0a1c;
-            border-left: 3px solid #a855f7;
-            padding: 6px 10px;
-            margin: 0;
-            font-size: 13px;
-            color: #f3e8ff;
-            border-radius: 0 4px 4px 0;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-    </style>
+    <!-- Połączenie z zewnętrznym plikiem CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <!-- PRZYPIĘTY PASEK GÓRNY -->
     <div class="top-bar">
-        <!-- PRZESUWANIE NAPISU NEONOWEGO -->
-        <div style="overflow: hidden; white-space: nowrap; background-color: #0d0714; border-bottom: 2px solid #a855f7; padding: 10px 0;">
+        <div class="tasma-container">
             <div class="tasma-napisu">
                 <span class="neon-tekst">🏆 AS GRZYBSONIA SEZON 2026/27</span>
                 <span class="neon-tekst">⚽ AS GRZYBSONIA SEZON 2026/27</span>
@@ -478,7 +25,7 @@
             <a href="#kadra" class="nav-btn">Kadra & Taktyka</a>
             <a href="#transfery" class="nav-btn">Transfery</a>
             <a href="#sezon" class="nav-btn">Sezon & Tabela</a>
-            <a href="#statystyki" class="nav-btn">Statystyki & Biuro</a>
+            <a href="#trofea" class="nav-btn">Gablota Trofeów</a>
         </nav>
     </div>
 
@@ -489,7 +36,7 @@
             <h1>AS GRZYBSONIA</h1>
             <p>Centrum zarządzania karierą menedżerską w EA Sports FC 27.</p>
             
-            <div style="display: flex; align-items: center; justify-content: center; padding-top: 15px;">
+            <div class="hero-logo-container">
                 <svg width="220" height="220" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                     <path d="M 100 190 C 40 180 10 140 10 80 L 100 10 L 190 80 C 190 140 160 180 100 190 Z" 
                           fill="#1a0f35" stroke="#a855f7" stroke-width="6"/>
@@ -514,68 +61,26 @@
             <div class="info-group">
                 <div class="info-group-title">🛡️ INFORMACJE O KLUBIE</div>
                 <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Nazwa Klubu</span>
-                        <span class="info-value">AS Grzybsonia</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Przydomek</span>
-                        <span class="info-value">X</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Rok Założenia</span>
-                        <span class="info-value">2026</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Kraj</span>
-                        <span class="info-value">Anglia</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Liga</span>
-                        <span class="info-value">EFL League Two</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Stadion</span>
-                        <span class="info-value">Grzybsonia Arena</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Pojemność</span>
-                        <span class="info-value">X</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Barwy Klubowe</span>
-                        <span class="info-value">Fioletowo-Białe / Fioletowo-Czarne</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Producent Strojów</span>
-                        <span class="info-value">EA SPORTS</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Główny Sponsor</span>
-                        <span class="info-value">Sky Bet</span>
-                    </div>
+                    <div class="info-item"><span class="info-label">Nazwa Klubu</span><span class="info-value">AS Grzybsonia</span></div>
+                    <div class="info-item"><span class="info-label">Przydomek</span><span class="info-value">X</span></div>
+                    <div class="info-item"><span class="info-label">Rok Założenia</span><span class="info-value">2026</span></div>
+                    <div class="info-item"><span class="info-label">Kraj</span><span class="info-value">Anglia</span></div>
+                    <div class="info-item"><span class="info-label">Liga</span><span class="info-value">EFL League Two</span></div>
+                    <div class="info-item"><span class="info-label">Stadion</span><span class="info-value">Grzybsonia Arena</span></div>
+                    <div class="info-item"><span class="info-label">Pojemność</span><span class="info-value">X</span></div>
+                    <div class="info-item"><span class="info-label">Barwy Klubowe</span><span class="info-value">Fioletowo-Białe / Fioletowo-Czarne</span></div>
+                    <div class="info-item"><span class="info-label">Producent Strojów</span><span class="info-value">EA SPORTS</span></div>
+                    <div class="info-item"><span class="info-label">Główny Sponsor</span><span class="info-value">Sky Bet</span></div>
                 </div>
             </div>
 
             <div class="info-group">
                 <div class="info-group-title">👨‍💼 INFORMACJE O MENEDŻERZE</div>
                 <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Imię i Nazwisko</span>
-                        <span class="info-value">Adam Grzybowski</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Narodowość</span>
-                        <span class="info-value">Polska</span>
-                    </div>
-                    <div class="info-item full-width">
-                        <span class="info-label">Data Urodzenia</span>
-                        <span class="info-value highlight">19.08.2005</span>
-                    </div>
-                    <div class="info-item full-width">
-                        <span class="info-label">Wiek</span>
-                        <span class="info-value highlight">21</span>
-                    </div>
+                    <div class="info-item"><span class="info-label">Imię i Nazwisko</span><span class="info-value">Adam Grzybowski</span></div>
+                    <div class="info-item"><span class="info-label">Narodowość</span><span class="info-value">Polska</span></div>
+                    <div class="info-item full-width"><span class="info-label">Data Urodzenia</span><span class="info-value highlight">19.08.2005</span></div>
+                    <div class="info-item full-width"><span class="info-label">Wiek</span><span class="info-value highlight">21</span></div>
                 </div>
             </div>
         </div>
@@ -586,73 +91,29 @@
             
             <div class="pitch">
                 <div class="pitch-row">
-                    <div class="player-card">
-                        <span class="pos">N</span>
-                        <span class="name">Hubert Gdański</span>
-                        <span class="stats">81 | 86</span>
-                    </div>
-                    <div class="player-card">
-                        <span class="pos">N</span>
-                        <span class="name">Nieznany</span>
-                        <span class="stats">84 | 90</span>
-                    </div>
+                    <div class="player-card"><span class="pos">N</span><span class="name">Hubert Gdański</span><span class="stats">81 | 86</span></div>
+                    <div class="player-card"><span class="pos">N</span><span class="name">Nieznany</span><span class="stats">84 | 90</span></div>
                 </div>
 
                 <div class="pitch-row">
-                    <div class="player-card">
-                        <span class="pos">ŚPO</span>
-                        <span class="name">Nieznany</span>
-                        <span class="stats">83 | 89</span>
-                    </div>
+                    <div class="player-card"><span class="pos">ŚPO</span><span class="name">Nieznany</span><span class="stats">83 | 89</span></div>
                 </div>
 
                 <div class="pitch-row">
-                    <div class="player-card">
-                        <span class="pos">LP</span>
-                        <span class="name">Iran Ferreira</span>
-                        <span class="stats">79 | 84</span>
-                    </div>
-                    <div class="player-card">
-                        <span class="pos">ŚP</span>
-                        <span class="name">Nieznany</span>
-                        <span class="stats">82 | 87</span>
-                    </div>
-                    <div class="player-card">
-                        <span class="pos">ŚP</span>
-                        <span class="name">Nieznany</span>
-                        <span class="stats">80 | 85</span>
-                    </div>
-                    <div class="player-card">
-                        <span class="pos">PP</span>
-                        <span class="name">Nieznany</span>
-                        <span class="stats">78 | 83</span>
-                    </div>
+                    <div class="player-card"><span class="pos">LP</span><span class="name">Iran Ferreira</span><span class="stats">79 | 84</span></div>
+                    <div class="player-card"><span class="pos">ŚP</span><span class="name">Nieznany</span><span class="stats">82 | 87</span></div>
+                    <div class="player-card"><span class="pos">ŚP</span><span class="name">Nieznany</span><span class="stats">80 | 85</span></div>
+                    <div class="player-card"><span class="pos">PP</span><span class="name">Nieznany</span><span class="stats">78 | 83</span></div>
                 </div>
 
                 <div class="pitch-row">
-                    <div class="player-card">
-                        <span class="pos">ŚO</span>
-                        <span class="name">Nieznany</span>
-                        <span class="stats">80 | 85</span>
-                    </div>
-                    <div class="player-card">
-                        <span class="pos">ŚO</span>
-                        <span class="name">Witold Czarniak</span>
-                        <span class="stats">79 | 84</span>
-                    </div>
-                    <div class="player-card">
-                        <span class="pos">ŚO</span>
-                        <span class="name">Nieznany</span>
-                        <span class="stats">81 | 86</span>
-                    </div>
+                    <div class="player-card"><span class="pos">ŚO</span><span class="name">Nieznany</span><span class="stats">80 | 85</span></div>
+                    <div class="player-card"><span class="pos">ŚO</span><span class="name">Witold Czarniak</span><span class="stats">79 | 84</span></div>
+                    <div class="player-card"><span class="pos">ŚO</span><span class="name">Nieznany</span><span class="stats">81 | 86</span></div>
                 </div>
 
                 <div class="pitch-row">
-                    <div class="player-card goalkeeper">
-                        <span class="pos">BR</span>
-                        <span class="name">Nieznany</span>
-                        <span class="stats">82 | 88</span>
-                    </div>
+                    <div class="player-card goalkeeper"><span class="pos">BR</span><span class="name">Nieznany</span><span class="stats">82 | 88</span></div>
                 </div>
             </div>
         </div>
@@ -660,7 +121,7 @@
         <!-- SEKCJA: TRANSFERY -->
         <div id="transfery" class="section-target card">
             <h2>Transfery</h2>
-            <p style="margin-bottom: 15px;">Wybierz kategorię, aby zobaczyć historię transakcji</p>
+            <p class="section-desc">Wybierz kategorię, aby zobaczyć historię transakcji:</p>
             
             <div class="transfer-buttons-container">
                 <div class="transfer-row-top">
@@ -676,62 +137,164 @@
         <!-- SEKCJA: SEZON & TABELA -->
         <div id="sezon" class="section-target card">
             <h2>Sezon & Tabela</h2>
-            <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px;">
-                <table id="tabela-ligowa" style="width: 100%; border-collapse: collapse; min-width: 500px; text-align: center;">
+            <div class="table-wrapper">
+                <table id="tabela-ligowa">
                     <thead>
-                        <tr style="background-color: #1a0f35; color: #a855f7; border-bottom: 2px solid #3b1d66;">
-                            <th style="padding: 10px; width: 40px;">#</th>
-                            <th style="padding: 10px; text-align: left;">Klub</th>
-                            <th style="padding: 10px; width: 40px;">M</th>
-                            <th style="padding: 10px; width: 40px;">Z</th>
-                            <th style="padding: 10px; width: 40px;">R</th>
-                            <th style="padding: 10px; width: 40px;">P</th>
-                            <th style="padding: 10px; width: 50px; color: #e9d5ff;">Pkt</th>
+                        <tr>
+                            <th class="col-num">#</th>
+                            <th class="col-club">Klub</th>
+                            <th class="col-stat">M</th>
+                            <th class="col-stat">Z</th>
+                            <th class="col-stat">R</th>
+                            <th class="col-stat">P</th>
+                            <th class="col-pkt">PKT</th>
                         </tr>
                     </thead>
-                    <tbody style="color: #f3e8ff;">
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">York City</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Accrington Stanley</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Barnet</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Bristol Rovers</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Cheltenham Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Chesterfield</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Colchester United</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Crawley Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Crewe Alexandra</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Exeter City</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Fleetwood Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Gillingham</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Grimsby Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Newport County</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Northampton Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Oldham Athletic</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Port Vale</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Rochdale</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Rotherham United</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Salford City</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Shrewsbury Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Swindon Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Tranmere Rovers</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
-                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td style="text-align: left; padding: 8px;">Walsall</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                    <tbody>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">York City</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Accrington Stanley</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Barnet</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Bristol Rovers</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Cheltenham Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Chesterfield</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Colchester United</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Crawley Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Crewe Alexandra</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Exeter City</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Fleetwood Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Gillingham</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Grimsby Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Newport County</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Northampton Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Oldham Athletic</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Port Vale</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Rochdale</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Rotherham United</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Salford City</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Shrewsbury Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Swindon Town</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Tranmere Rovers</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
+                        <tr data-z="0" data-r="0" data-p="0"><td>0</td><td class="col-club">Walsall</td><td class="m">0</td><td class="z">0</td><td class="r">0</td><td class="p">0</td><td class="pkt"><strong>0</strong></td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- SEKCJA: STATYSTYKI & BIURO -->
-        <div id="statystyki" class="section-target card">
-            <h2>Statystyki & Biuro</h2>
-            <p><strong>Najlepsi Strzelcy:</strong> Brak bramek w obecnym sezonie.</p>
-            <br>
-            <p><strong>Finanse Klubu:</strong> Stan konta: 50,000,000 €</p>
+        <!-- SEKCJA GABLOTY TROFEÓW -->
+<div id="trofea" class="section-target card">
+    <h2>🏆 Gablota Trofeów</h2>
+
+    <!-- PODSUMOWANIE ŁĄCZNE -->
+    <div class="trophy-summary-bar">
+        <div class="summary-item">
+            <span class="summary-value">0</span>
+            <span class="summary-label">Łącznie Trofeów</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-value">0</span>
+            <span class="summary-label">Krajowe</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-value">0</span>
+            <span class="summary-label">Międzynarodowe</span>
+        </div>
+    </div>
+
+    <div class="trophy-categories">
+
+        <!-- KATEGORIA: TROFEA KRAJOWE -->
+        <div class="trophy-category-group">
+            <h3 class="category-title">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Trofea Krajowe</h3>
+            <div class="trophy-grid">
+
+                <!-- Mistrzostwo Ligi -->
+                <div class="trophy-card gold">
+                    <div class="trophy-icon">🏆</div>
+                    <div class="trophy-info">
+                        <h4 class="trophy-name">Mistrzostwo Ligi</h4>
+                        <span class="trophy-count">0x Zwycięzca</span>
+                        <p class="trophy-seasons">Oczekuje na pierwszy tytuł</p>
+                    </div>
+                </div>
+
+                <!-- Puchar Krajowy -->
+                <div class="trophy-card silver">
+                    <div class="trophy-icon">🥇</div>
+                    <div class="trophy-info">
+                        <h4 class="trophy-name">Puchar Krajowy</h4>
+                        <span class="trophy-count">0x Zwycięzca</span>
+                        <p class="trophy-seasons">Oczekuje na pierwszy tytuł</p>
+                    </div>
+                </div>
+
+                <!-- Superpuchar Polski / Krajowy -->
+                <div class="trophy-card bronze">
+                    <div class="trophy-icon">⭐</div>
+                    <div class="trophy-info">
+                        <h4 class="trophy-name">Superpuchar Krajowy</h4>
+                        <span class="trophy-count">0x Zwycięzca</span>
+                        <p class="trophy-seasons">Oczekuje na pierwszy tytuł</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- KATEGORIA: EUROPEJSKIE PUCHARY (UEFA) -->
+        <div class="trophy-category-group">
+            <h3 class="category-title">🇪🇺 Rozgrywki UEFA</h3>
+            <div class="trophy-grid">
+
+                <!-- UEFA Champions League -->
+                <div class="trophy-card ucl">
+                    <div class="trophy-icon">⚽</div>
+                    <div class="trophy-info">
+                        <h4 class="trophy-name">UEFA Champions League</h4>
+                        <span class="trophy-count">0x Zwycięzca</span>
+                        <p class="trophy-seasons">Oczekuje na pierwszy tytuł</p>
+                    </div>
+                </div>
+
+                <!-- UEFA Europa League -->
+                <div class="trophy-card uel">
+                    <div class="trophy-icon">🌟</div>
+                    <div class="trophy-info">
+                        <h4 class="trophy-name">UEFA Europa League</h4>
+                        <span class="trophy-count">0x Zwycięzca</span>
+                        <p class="trophy-seasons">Oczekuje na pierwszy tytuł</p>
+                    </div>
+                </div>
+
+                <!-- UEFA Conference League -->
+                <div class="trophy-card uecl">
+                    <div class="trophy-icon">🛡️</div>
+                    <div class="trophy-info">
+                        <h4 class="trophy-name">UEFA Conference League</h4>
+                        <span class="trophy-count">0x Zwycięzca</span>
+                        <p class="trophy-seasons">Oczekuje na pierwszy tytuł</p>
+                    </div>
+                </div>
+
+                <!-- Superpuchar Europy -->
+                <div class="trophy-card supercup">
+                    <div class="trophy-icon">👑</div>
+                    <div class="trophy-info">
+                        <h4 class="trophy-name">Superpuchar Europy</h4>
+                        <span class="trophy-count">0x Zwycięzca</span>
+                        <p class="trophy-seasons">Oczekuje na pierwszy tytuł</p>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </div>
+</div>
+
+
 
     <!-- OKNA MODALNE (TRANSFERY) -->
     
-    <!-- OKNO 1: PRZYCHODZĄCE -->
     <div id="modal-przychodzace" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -739,54 +302,30 @@
                 <button class="close-btn" onclick="closeTransferModal('modal-przychodzace')">➔</button>
             </div>
             <div class="modal-body">
-                
                 <div class="transfer-summary">
-                    <strong>📊 PODSUMOWANIE OKIENEK</strong>
+                    <strong>📊 PODSUMOWANIE OKIENKA</strong>
                     <p><strong>Wydatki ogółem:</strong> 0 €</p>
-                    <p><strong>Przeprowadzone transfery:</strong> 0</p>
+                    <p><strong>Przeprowadzone transfery:</strong> 1</p>
                 </div>
 
                 <h4>Historia Transakcji:</h4>
-                
                 <details class="transfer-card">
                     <summary class="transfer-summary-title">
                         <span>🆕 <strong>TRANSFER #1</strong></span>
                         <span class="player-name-badge">Jan Kowalski</span>
                     </summary>
-                    
                     <div class="transfer-details-content">
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">📍 Kierunek Transferu</span>
-                            <blockquote class="detail-value">Jakis klub ➤ AS Grzybsonia</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">🌍 Narodowość</span>
-                            <blockquote class="detail-value">x</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">⚽ Pozycja</span>
-                            <blockquote class="detail-value">x</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">💰 Kwota Transferu</span>
-                            <blockquote class="detail-value">0 €</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">📄 Długość Kontraktu</span>
-                            <blockquote class="detail-value">0 lat</blockquote>
-                        </div>
+                        <div class="transfer-detail-item"><span class="detail-label">📍 Kierunek Transferu</span><blockquote class="detail-value">Jakis klub ➤ AS Grzybsonia</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">🌍 Narodowość</span><blockquote class="detail-value">x</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">⚽ Pozycja</span><blockquote class="detail-value">x</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">💰 Kwota Transferu</span><blockquote class="detail-value">0 €</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">📄 Długość Kontraktu</span><blockquote class="detail-value">0 lat</blockquote></div>
                     </div>
                 </details>
-
             </div>
         </div>
     </div>
 
-    <!-- OKNO 2: WYCHODZĄCE -->
     <div id="modal-wychodzace" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -794,54 +333,30 @@
                 <button class="close-btn" onclick="closeTransferModal('modal-wychodzace')">➔</button>
             </div>
             <div class="modal-body">
-                
                 <div class="transfer-summary">
-                    <strong>📊 PODSUMOWANIE OKIENEK</strong>
+                    <strong>📊 PODSUMOWANIE OKIENKA</strong>
                     <p><strong>Przychody ogółem:</strong> 0 €</p>
-                    <p><strong>Sprzedani zawodnicy:</strong> 0</p>
+                    <p><strong>Sprzedani zawodnicy:</strong> 1</p>
                 </div>
 
                 <h4>Historia Transakcji:</h4>
-
                 <details class="transfer-card">
                     <summary class="transfer-summary-title">
                         <span>📤 <strong>TRANSFER #1</strong></span>
-                        <span class="player-name-badge">Jan Kowalski</span>
+                        <span class="player-name-badge">Piotr Nowak</span>
                     </summary>
-                    
                     <div class="transfer-details-content">
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">📍 Kierunek Transferu</span>
-                            <blockquote class="detail-value">AS Grzybsonia ➤ Jakis klub</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">🌍 Narodowość</span>
-                            <blockquote class="detail-value">x</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">⚽ Pozycja</span>
-                            <blockquote class="detail-value">x</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">💰 Kwota Transferu</span>
-                            <blockquote class="detail-value">0 €</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">📄 Długość Kontraktu</span>
-                            <blockquote class="detail-value">0 lat</blockquote>
-                        </div>
+                        <div class="transfer-detail-item"><span class="detail-label">📍 Kierunek Transferu</span><blockquote class="detail-value">AS Grzybsonia ➤ Jakis klub</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">🌍 Narodowość</span><blockquote class="detail-value">x</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">⚽ Pozycja</span><blockquote class="detail-value">x</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">💰 Kwota Transferu</span><blockquote class="detail-value">0 €</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">📄 Długość Kontraktu</span><blockquote class="detail-value">0 lat</blockquote></div>
                     </div>
                 </details>
-
             </div>
         </div>
     </div>
 
-    <!-- OKNO 3: WYPOŻYCZENIA -->
     <div id="modal-wypozyczenia" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -849,103 +364,30 @@
                 <button class="close-btn" onclick="closeTransferModal('modal-wypozyczenia')">➔</button>
             </div>
             <div class="modal-body">
-                
                 <div class="transfer-summary">
-                    <strong>📊 PODSUMOWANIE OKIENEK</strong>
-                    <p><strong>Aktywne wypożyczenia:</strong> 0</p>
+                    <strong>📊 PODSUMOWANIE OKIENKA</strong>
+                    <p><strong>Aktywne wypożyczenia:</strong> 1</p>
                 </div>
 
                 <h4>Historia Transakcji:</h4>
-
                 <details class="transfer-card">
                     <summary class="transfer-summary-title">
                         <span>🔄 <strong>WYPOŻYCZENIE #1</strong></span>
-                        <span class="player-name-badge">Jan Kowalski</span>
+                        <span class="player-name-badge">Michał Wiśniewski</span>
                     </summary>
-                    
                     <div class="transfer-details-content">
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">📍 Kierunek Wypożyczenia</span>
-                            <blockquote class="detail-value">AS Grzybsonia ➤ Jakis klub</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">🌍 Narodowość</span>
-                            <blockquote class="detail-value">x</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">⚽ Pozycja</span>
-                            <blockquote class="detail-value">x</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">💰 Podział opłaty Wypożyczenia</span>
-                            <blockquote class="detail-value">0/0 %</blockquote>
-                        </div>
-
-                        <div class="transfer-detail-item">
-                            <span class="detail-label">📄 Czas Trwania</span>
-                            <blockquote class="detail-value">0 rok</blockquote>
-                        </div>
+                        <div class="transfer-detail-item"><span class="detail-label">📍 Kierunek Wypożyczenia</span><blockquote class="detail-value">AS Grzybsonia ➤ Jakis klub</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">🌍 Narodowość</span><blockquote class="detail-value">x</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">⚽ Pozycja</span><blockquote class="detail-value">x</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">💰 Opłata za Wypożyczenie</span><blockquote class="detail-value">0 €</blockquote></div>
+                        <div class="transfer-detail-item"><span class="detail-label">📄 Czas Trwania</span><blockquote class="detail-value">1 rok</blockquote></div>
                     </div>
                 </details>
-
             </div>
         </div>
     </div>
 
-    <!-- SKRYPTY JAVASCRIPT -->
-    <script>
-        // Obsługa otwierania i blokowania tła dla modali
-        function openTransferModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'flex';
-                document.body.classList.add('modal-open');
-            }
-        }
-
-        function closeTransferModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.classList.remove('modal-open');
-            }
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal-overlay')) {
-                event.target.style.display = 'none';
-                document.body.classList.remove('modal-open');
-            }
-        };
-
-        // Automatyczne przeliczanie i sortowanie tabeli ligowej
-        const tableBody = document.querySelector('#tabela-ligowa tbody');
-        const rows = Array.from(tableBody.querySelectorAll('tr'));
-
-        rows.sort((a, b) => {
-            const ptsA = (parseInt(a.getAttribute('data-z')) * 3) + parseInt(a.getAttribute('data-r'));
-            const ptsB = (parseInt(b.getAttribute('data-z')) * 3) + parseInt(b.getAttribute('data-r'));
-            return ptsB - ptsA;
-        });
-
-        rows.forEach((row, index) => {
-            const z = parseInt(row.getAttribute('data-z')) || 0;
-            const r = parseInt(row.getAttribute('data-r')) || 0;
-            const p = parseInt(row.getAttribute('data-p')) || 0;
-            
-            row.querySelector('.m').textContent = z + r + p;
-            row.querySelector('.z').textContent = z;
-            row.querySelector('.r').textContent = r;
-            row.querySelector('.p').textContent = p;
-            row.querySelector('.pkt').innerHTML = `<strong>${(z * 3) + r}</strong>`;
-            
-            row.cells[0].textContent = index + 1;
-            
-            tableBody.appendChild(row);
-        });
-    </script>
+    <!-- Połączenie z zewnętrznym plikiem JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
