@@ -149,3 +149,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Otwieranie okna modalnego (np. kalendarza)
+function openMatchModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Zamykanie konkretnego okna modalnego
+function closeMatchModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Wyświetlanie szczegółów pojedynczego meczu NA OTWARCIE KALENDARZA
+function showMatchDetails(title, date, competition, events) {
+    // Wypełnienie danych w oknie szczegółów
+    document.getElementById('match-modal-title').innerText = title;
+    document.getElementById('match-modal-score').innerText = title;
+    document.getElementById('match-modal-date').innerText = 'Data: ' + date;
+    document.getElementById('match-modal-comp').innerText = competition;
+    document.getElementById('match-modal-events').innerHTML = events;
+
+    // Otwarcie okna szczegółów (pojawi się na wierzchu dzięki z-index: 2000)
+    openMatchModal('modal-szczegoly-meczu');
+}
