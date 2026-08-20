@@ -25,6 +25,7 @@
             <a href="#kadra" class="nav-btn">Kadra & Taktyka</a>
             <a href="#transfery" class="nav-btn">Transfery</a>
             <a href="#sezon" class="nav-btn">Sezon & Tabela</a>
+            <a href="#historia" class="nav-btn">Historia Meczów</a>
             <a href="#trofea" class="nav-btn">Gablota Trofeów</a>
         </nav>
     </div>
@@ -179,10 +180,98 @@
                 </table>
             </div>
         </div>
+        
+        <!-- SEKCJA: HISTORIA MECZÓW -->
+<div id="historia" class="section-target card">
+    <h2>Historia Meczów</h2>
+    <p class="section-desc">Wybierz kategorię, aby przejść do terminarza i wyników</p>
+
+    <!-- PRZYCISK GÓRNY: SEZON -->
+    <div style="margin-bottom: 15px;">
+        <button class="nav-btn transfer-btn" style="width: 100%;" onclick="openMatchModal('modal-kalendarz-sezon')">
+            LIGA
+        </button>
+    </div>
+
+    <!-- PRZYCISK DOLNY: TURNIEJE -->
+    <div>
+        <button class="nav-btn transfer-btn" style="width: 100%;" onclick="openMatchModal('modal-kalendarz-turnieje')">
+            TURNIEJE
+        </button>
+    </div>
+</div>
+
+<!-- MODAL 1: KALENDARZ SEZONU -->
+<div id="modal-kalendarz-sezon" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Terminarz & Wyniki: LIGA</h3>
+            <button class="close-btn" onclick="closeMatchModal('modal-kalendarz-sezon')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="match-calendar-grid">
+                <!-- Mecz 1 -->
+                <div class="calendar-day-card win" onclick="showMatchDetails('AS Grzybsonia 3:1 York City', '12.08.2026', 'EFL League Two', '⚽ Gdański 14\', 45\'<br>⚽ Czarniak 78\'<br>🟨 Ferreira 33\'')">
+                    <span class="cal-date">12 AUG</span>
+                    <span class="cal-teams">vs York City</span>
+                    <span class="cal-score">3 : 1</span>
+                </div>
+                <!-- Mecz 2 -->
+                <div class="calendar-day-card draw" onclick="showMatchDetails('Accrington 1:1 AS Grzybsonia', '19.08.2026', 'EFL League Two', '⚽ Gdański 60\'<br>🔴 Nieznany 88\'')">
+                    <span class="cal-date">19 AUG</span>
+                    <span class="cal-teams">@ Accrington</span>
+                    <span class="cal-score">1 : 1</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 2: KALENDARZ TURNIEJÓW -->
+<div id="modal-kalendarz-turnieje" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Terminarz & Wyniki: TURNIEJE</h3>
+            <button class="close-btn" onclick="closeMatchModal('modal-kalendarz-turnieje')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="match-calendar-grid">
+                <!-- Mecz Puchary -->
+                <div class="calendar-day-card win" onclick="showMatchDetails('AS Grzybsonia 2:0 Barnet', '25.08.2026', 'Puchar Krajowy (Runda 1)', '⚽ Ferreira 22\'<br>⚽ Gdański 85\'')">
+                    <span class="cal-date">25 AUG</span>
+                    <span class="cal-teams">vs Barnet</span>
+                    <span class="cal-score">2 : 0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 3: SZCZEGÓŁY MECZU (ZDARZENIA) -->
+<div id="modal-szczegoly-meczu" class="modal-overlay" style="z-index: 1100;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="match-modal-title">Szczegóły Meczowe</h3>
+            <button class="close-btn" onclick="closeMatchModal('modal-szczegoly-meczu')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="transfer-summary" style="text-align: center; margin-bottom: 15px;">
+                <span id="match-modal-comp" style="color: #c084fc; font-size: 12px; font-weight: bold;"></span>
+                <h2 id="match-modal-score" style="color: #fff; margin: 5px 0;"></h2>
+                <span id="match-modal-date" style="color: #949ba4; font-size: 11px;"></span>
+            </div>
+
+            <h4 style="color: #e9d5ff; border-bottom: 1px solid #3b1d66; padding-bottom: 5px; margin-bottom: 10px;">Zdarzenia Meczowe:</h4>
+            <div id="match-modal-events" style="background: #0f0a1c; border: 1px solid #3b1d66; padding: 12px; border-radius: 8px; color: #fff; font-size: 13px; line-height: 1.6;">
+            </div>
+        </div>
+    </div>
+</div>
+
 
         <!-- SEKCJA GABLOTY TROFEÓW -->
 <div id="trofea" class="section-target card">
-    <h2>🏆 Gablota Trofeów</h2>
+    <h2>Gablota Trofeów</h2>
 
     <!-- PODSUMOWANIE ŁĄCZNE -->
     <div class="trophy-summary-bar">
