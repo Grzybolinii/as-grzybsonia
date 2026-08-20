@@ -478,5 +478,25 @@
 
     <!-- Połączenie z zewnętrznym plikiem JavaScript -->
     <script src="script.js"></script>
+
+    <!-- Okno modalne szczegółów meczu -->
+    <div id="modal-szczegoly-meczu" class="custom-modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeMatchModal('modal-szczegoly-meczu')">&times;</span>
+            <h2 id="match-modal-title">Szczegóły Meczu</h2>
+            <p id="match-modal-comp" class="modal-subtitle"></p>
+            <p id="match-modal-date" class="modal-date"></p>
+            <div id="match-modal-score" class="modal-score-box"></div>
+            
+            <h3>Zdarzenia w meczu</h3>
+            <div id="match-modal-events" class="modal-events-box"></div>
+        </div>
+    </div>
+
+    <!-- Prawidłowa kolejność skryptów na dole strony -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+
 </body>
 </html>
