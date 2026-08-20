@@ -1,3 +1,9 @@
+const SUPABASE_URL = 'https://xaagybkwsccfnrqkzbgu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhYWd5Ymt3c2NjZm5ycWt6Ymd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzMDcyNDQsImV4cCI6MjA1NTg4MzI0NH0.vkVP3RjUcLjFKyZzxdcG8LhSBa03Bcpdm_BaQ2PgCtg';
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
 // Obsługa otwierania i zamykania okien modalnych
 function openTransferModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -178,7 +184,3 @@ function showMatchDetails(title, date, competition, events) {
     // Otwarcie okna szczegółów (pojawi się na wierzchu dzięki z-index: 2000)
     openMatchModal('modal-szczegoly-meczu');
 }
-
-const SUPABASE_URL = 'https://xaagybkwsccfnrqkzbgu.supabase.co/rest/v1/';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhYWd5Ymt3c2NjZm5ycWt6Ymd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcyMjQ4NDYsImV4cCI6MjEwMjgwMDg0Nn0.vkVP3RjUcLjFKyZzxdcG8LhSBaO3Bcpdm_BaQ2PgCtg';
-
