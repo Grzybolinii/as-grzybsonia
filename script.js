@@ -3,6 +3,75 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+document.addEventListener('DOMContentLoaded', () => {
+    pobierzMecze();
+});
+
+async function pobierzMecze() {
+    const { data: mecze, error } = await db.from('mecze').select('*').order('data_meczu', { ascending: true });
+
+    if (error) {
+        console.error("Błąd pobierania danych:", error.message);
+        return;
+    }
+
+    const kontenerSezon = document.querySelector('#modal-kalendarz-sezon .match-calendar-grid');
+    const kontenerTurnieje = document.querySelector('#modal-kalendarz-turnieje .match-calendar-grid');
+
+    if (!kontenerSezon && !kontenerTurnieje) return;
+
+    if (kontenerSezon) kontenerSezon.innerHTML = '';
+    if (kontenerTurnieje) kontenerTurnieje.innerHTML = '';
+
+    mecze.forEach(m => {
+        const kafelek = document.createElement('div');
+        kafelek.className = 'calendar-day-card win';
+        
+        // Kliknięcie w kafelek otwiera okienko szczegółów
+        kafelek.onclick = () => showMatchDetails(
+            `AS Grzybsonia vs ${m.przeciwnik}`,
+            m.wynik,
+            m.data_meczu,
+            m.rozgrywki,
+            m.zdarzenia || 'Brak wpisanych zdarzeń'
+        );
+
+        kafelek.innerHTML = `
+            <span class="cal-date">${m.data_meczu}</span>
+            <span class="cal-teams">vs ${m.przeciwnik}</span>
+            <span class="cal-score">${m.wynik}</span>
+        `;
+
+        if (m.kategoria === 'sezon' && kontenerSezon) {
+            kontenerSezon.appendChild(kafelek);
+        } else if (m.kategoria === 'turnieje' && kontenerTurnieje) {
+            kontenerTurnieje.appendChild(kafelek);
+        }
+    });
+}
+
+// Funkcje do otwierania i zamykania okienka (Modal)
+function showMatchDetails(title, score, date, competition, events) {
+    document.getElementById('match-modal-title').innerText = title;
+    document.getElementById('match-modal-score').innerText = score;
+    document.getElementById('match-modal-date').innerText = 'Data: ' + date;
+    document.getElementById('match-modal-comp').innerText = competition;
+    document.getElementById('match-modal-events').innerHTML = events;
+
+    openMatchModal('modal-szczegoly-meczu');
+}
+
+function openMatchModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeMatchModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'none';
+}
+
+
 
 // Obsługa otwierania i zamykania okien modalnych
 function openTransferModal(modalId) {
