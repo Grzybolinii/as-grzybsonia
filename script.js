@@ -1,74 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
-    pobierzMecze();
-});
+// ==========================================
+// OBSŁUGA OKIEN MODALNYCH (TRANSFERY)
+// ==========================================
 
-async function pobierzMecze() {
-    const { data: mecze, error } = await db.from('mecze').select('*').order('data_meczu', { ascending: true });
-
-    if (error) {
-        console.error("Błąd pobierania danych:", error.message);
-        return;
-    }
-
-    const kontenerSezon = document.querySelector('#modal-kalendarz-sezon .match-calendar-grid');
-    const kontenerTurnieje = document.querySelector('#modal-kalendarz-turnieje .match-calendar-grid');
-
-    if (!kontenerSezon && !kontenerTurnieje) return;
-
-    if (kontenerSezon) kontenerSezon.innerHTML = '';
-    if (kontenerTurnieje) kontenerTurnieje.innerHTML = '';
-
-    mecze.forEach(m => {
-        const kafelek = document.createElement('div');
-        kafelek.className = 'calendar-day-card win';
-        
-        // Kliknięcie w kafelek otwiera okienko szczegółów
-        kafelek.onclick = () => showMatchDetails(
-            `AS Grzybsonia vs ${m.przeciwnik}`,
-            m.wynik,
-            m.data_meczu,
-            m.rozgrywki,
-            m.zdarzenia || 'Brak wpisanych zdarzeń'
-        );
-
-        kafelek.innerHTML = `
-            <span class="cal-date">${m.data_meczu}</span>
-            <span class="cal-teams">vs ${m.przeciwnik}</span>
-            <span class="cal-score">${m.wynik}</span>
-        `;
-
-        if (m.kategoria === 'sezon' && kontenerSezon) {
-            kontenerSezon.appendChild(kafelek);
-        } else if (m.kategoria === 'turnieje' && kontenerTurnieje) {
-            kontenerTurnieje.appendChild(kafelek);
-        }
-    });
-}
-
-// Funkcje do otwierania i zamykania okienka (Modal)
-function showMatchDetails(title, score, date, competition, events) {
-    document.getElementById('match-modal-title').innerText = title;
-    document.getElementById('match-modal-score').innerText = score;
-    document.getElementById('match-modal-date').innerText = 'Data: ' + date;
-    document.getElementById('match-modal-comp').innerText = competition;
-    document.getElementById('match-modal-events').innerHTML = events;
-
-    openMatchModal('modal-szczegoly-meczu');
-}
-
-function openMatchModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = 'flex';
-}
-
-function closeMatchModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = 'none';
-}
-
-
-
-// Obsługa otwierania i zamykania okien modalnych
 function openTransferModal(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
@@ -85,13 +18,17 @@ function closeTransferModal(modalId) {
     }
 }
 
-// Zamykanie okna po kliknięciu poza jego obszar
+// Zamykanie okna po kliknięciu poza jego obszar (na tło modal-overlay)
 window.onclick = function(event) {
     if (event.target.classList.contains('modal-overlay')) {
         event.target.style.display = 'none';
         document.body.classList.remove('modal-open');
     }
 };
+
+// ==========================================
+// KALKULATOR KWOT I PODSUMOWANIE TRANSFERÓW
+// ==========================================
 
 // Pomocnicza funkcja do przeliczania tekstu z kwotą (np. "12 500 000 €" lub "12.5M €") na czystą liczbę
 function parseKwota(tekst) {
@@ -172,7 +109,7 @@ function aktualizujPodsumowaniaTransferow() {
         }
     }
 
-    // 3. WYPOŻYCZENIA (Tylko liczba aktywnych wypożyczeń)
+    // 3. WYPOŻYCZENIA (Liczba aktywnych wypożyczeń)
     const modalWypozyczenia = document.getElementById('modal-wypozyczenia');
     if (modalWypozyczenia) {
         const karty = modalWypozyczenia.querySelectorAll('details.transfer-card');
@@ -186,22 +123,27 @@ function aktualizujPodsumowaniaTransferow() {
     }
 }
 
-// Glówny inicjalizator po załadowaniu drzewa DOM
+// ==========================================
+// INICJALIZACJA STRONY PO ZAŁADOWANIU DOM
+// ==========================================
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Przeprowadź kalkulację transferów
+    // 1. Przeprowadź kalkulację transferów
     aktualizujPodsumowaniaTransferow();
 
-    // Inicjalizacja i sortowanie tabeli ligowej
+    // 2. Inicjalizacja i automatyczne sortowanie tabeli ligowej
     const tableBody = document.querySelector('#tabela-ligowa tbody');
     if (tableBody) {
         const rows = Array.from(tableBody.querySelectorAll('tr'));
 
+        // Sortowanie wierszy malejąco wg sumy punktów (Wygrane * 3 + Remisy)
         rows.sort((a, b) => {
-            const ptsA = (parseInt(a.getAttribute('data-z')) * 3) + parseInt(a.getAttribute('data-r'));
-            const ptsB = (parseInt(b.getAttribute('data-z')) * 3) + parseInt(b.getAttribute('data-r'));
+            const ptsA = (parseInt(a.getAttribute('data-z') || 0) * 3) + parseInt(a.getAttribute('data-r') || 0);
+            const ptsB = (parseInt(b.getAttribute('data-z') || 0) * 3) + parseInt(b.getAttribute('data-r') || 0);
             return ptsB - ptsA;
         });
 
+        // Wypełnienie wartości statystyk (Mecze, Punkty) oraz ponowne ułożenie wierszy
         rows.forEach((row, index) => {
             const z = parseInt(row.getAttribute('data-z')) || 0;
             const r = parseInt(row.getAttribute('data-r')) || 0;
@@ -213,38 +155,10 @@ document.addEventListener('DOMContentLoaded', () => {
             row.querySelector('.p').textContent = p;
             row.querySelector('.pkt').innerHTML = `<strong>${(z * 3) + r}</strong>`;
             
+            // Kolumna pozycji (#)
             row.cells[0].textContent = index + 1;
             
             tableBody.appendChild(row);
         });
     }
 });
-
-// Otwieranie okna modalnego (np. kalendarza)
-function openMatchModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'flex';
-    }
-}
-
-// Zamykanie konkretnego okna modalnego
-function closeMatchModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// Wyświetlanie szczegółów pojedynczego meczu NA OTWARCIE KALENDARZA
-function showMatchDetails(title, date, competition, events) {
-    // Wypełnienie danych w oknie szczegółów
-    document.getElementById('match-modal-title').innerText = title;
-    document.getElementById('match-modal-score').innerText = title;
-    document.getElementById('match-modal-date').innerText = 'Data: ' + date;
-    document.getElementById('match-modal-comp').innerText = competition;
-    document.getElementById('match-modal-events').innerHTML = events;
-
-    // Otwarcie okna szczegółów (pojawi się na wierzchu dzięki z-index: 2000)
-    openMatchModal('modal-szczegoly-meczu');
-}
