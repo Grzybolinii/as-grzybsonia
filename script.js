@@ -1,8 +1,3 @@
-const SUPABASE_URL = 'https://xaagybkwsccfnrqkzbgu.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhYWd5Ymt3c2NjZm5ycWt6Ymd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAzMDcyNDQsImV4cCI6MjA1NTg4MzI0NH0.vkVP3RjUcLjFKyZzxdcG8LhSBa03Bcpdm_BaQ2PgCtg';
-
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 document.addEventListener('DOMContentLoaded', () => {
     pobierzMecze();
 });
